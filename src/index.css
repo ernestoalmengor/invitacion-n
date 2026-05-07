@@ -1,0 +1,99 @@
+* {
+  margin: 0;
+  padding: 0;
+  box-sizing: border-box;
+}
+
+html {
+  scroll-behavior: smooth;
+  scroll-padding-top: 80px;
+}
+
+body {
+  font-family: "Montserrat", sans-serif;
+  overflow-x: hidden;
+  background: var(--light);
+}
+
+.hero-cover {
+  padding-top: 70px;
+  height: 100vh;
+  overflow: hidden;
+  background: var(--light);
+}
+
+.hero-cover-image {
+  width: 100%;
+  height: calc(100vh - 70px);
+  display: block;
+  object-fit: cover;
+  object-position: center center;
+  transform: scale(1.22);
+  transform-origin: center center;
+}
+
+@media (min-width: 769px) {
+  .hero-cover-image {
+    object-fit: contain;
+    transform: none;
+  }
+}
+
+@media (max-width: 768px) {
+  .hero-cover-image {
+    transform: scale(1.05);
+  }
+}
+
+/* Animaciones */
+@keyframes spin {
+  0% {
+    transform: rotate(0deg);
+  }
+  100% {
+    transform: rotate(360deg);
+  }
+}
+
+@keyframes fadeInUp {
+  from {
+    opacity: 0;
+    transform: translateY(30px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+@keyframes pulse {
+  0%,
+  100% {
+    transform: scale(1);
+  }
+  50% {
+    transform: scale(1.05);
+  }
+}
+
+.fade-up {
+  animation: fadeInUp 0.8s ease forwards;
+}
+
+/* Scrollbar personalizada */
+::-webkit-scrollbar {
+  width: 8px;
+}
+
+::-webkit-scrollbar-track {
+  background: #f1f1f1;
+}
+
+::-webkit-scrollbar-thumb {
+  background: var(--primary);
+  border-radius: 4px;
+}
+
+::-webkit-scrollbar-thumb:hover {
+  background: var(--dark);
+}
