@@ -31,12 +31,13 @@ const ScrollToTop = () => {
           onClick={scrollToTop}
           style={{
             position: "fixed",
-            bottom: "30px",
-            left: "30px",
+            bottom: "12px",
+            left: "12px",
             zIndex: 1000,
             width: "50px",
             height: "50px",
-            background: "var(--primary)",
+            background: "rgba(176, 136, 82, 0.78)",
+            backdropFilter: "blur(2px)",
             borderRadius: "50%",
             display: "flex",
             alignItems: "center",

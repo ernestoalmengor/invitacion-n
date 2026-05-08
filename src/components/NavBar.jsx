@@ -75,9 +75,9 @@ const NavBar = () => {
       >
         <a
           href="#"
-          className="gold-script"
+          className="gold-nav"
           style={{
-            fontSize: "2.2rem",
+            fontSize: "1.8rem",
             textDecoration: "none",
             zIndex: 1001,
           }}

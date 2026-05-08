@@ -10,7 +10,7 @@ import ScrollToTop from "./components/ScrollToTop";
 
 function App() {
   const [loading, setLoading] = useState(true);
-  const weddingDate = new Date("2026-05-16T10:30:00");
+  const weddingDate = new Date("2026-06-20T16:00:00");
 
   useEffect(() => {
     setTimeout(() => setLoading(false), 2000);
@@ -50,7 +50,7 @@ function App() {
             fontSize: "2.5rem",
           }}
         >
-          Belen & Ricardo
+          Belén & Ricardo
         </p>
         <style>{`@keyframes spin { 0% { transform: rotate(0deg); } 100% { transform: rotate(360deg); } }`}</style>
       </div>
@@ -68,24 +68,79 @@ function App() {
       <MusicPlayer />
       <ScrollToTop />
       <footer style={{ background: "var(--light)" }}>
-        <div style={{ maxWidth: "760px", margin: "0 auto", padding: "2.5rem 1.2rem 2rem", display: "flex", gap: "1.5rem", alignItems: "center", justifyContent: "center", flexWrap: "wrap" }}>
-          <i className="fas fa-gift" style={{ color: "var(--primary)", fontSize: "3rem" }} />
-          <div style={{ maxWidth: "460px" }}>
-            <h3 className="gold-script" style={{ fontSize: "clamp(2.8rem, 7vw, 4.4rem)", margin: "0 0 0.6rem" }}>
+        <div
+          style={{
+            maxWidth: "760px",
+            margin: "0 auto",
+            padding: "2.5rem 1.2rem 2rem",
+            display: "flex",
+            gap: "1.5rem",
+            alignItems: "center",
+            justifyContent: "center",
+            flexWrap: "wrap",
+            flexDirection: "column",
+          }}
+        >
+          <div style={{ maxWidth: "460px", textAlign: "center" }}>
+            <h2
+              className="gold-script"
+              style={{
+                fontSize: "clamp(3.2rem, 8vw, 5rem)",
+                marginBottom: "1rem",
+                marginTop: 0,
+              }}
+            >
               El mejor regalo
-            </h3>
-            <p style={{ margin: "0 0 0.9rem", fontSize: "1.45rem", lineHeight: 1.4 }}>
-              El mejor regalo que podemos recibir es tu compañía en este día tan especial.
+            </h2>
+            <i
+              className="fas fa-gift"
+              style={{
+                color: "var(--primary)",
+                fontSize: "3rem",
+                marginBottom: "1rem",
+                display: "block",
+              }}
+            />
+            <p
+              style={{
+                fontSize: "clamp(1.1rem, 3.5vw, 1.5rem)",
+                lineHeight: 1.25,
+                marginBottom: "1rem",
+                margin: "0.2rem 0 1rem",
+                textAlign: "justify",
+              }}
+            >
+              El mejor regalo que podemos recibir es tu compañía en este día tan
+              especial.
             </p>
-            <p style={{ margin: 0, fontSize: "1.45rem", lineHeight: 1.4 }}>
-              Sin embargo, si deseas obsequiarnos algo, agradecemos que sea en efectivo.
+            <p
+              style={{
+                fontSize: "clamp(1.1rem, 3.5vw, 1.5rem)",
+                lineHeight: 1.25,
+                marginBottom: "1rem",
+                margin: "0.2rem 0 1rem",
+                textAlign: "justify",
+              }}
+            >
+              Sin embargo, si deseas obsequiarnos algo, agradecemos que sea en
+              efectivo.
             </p>
           </div>
         </div>
 
-        <div style={{ background: "#f2f2f2", padding: "1.8rem 1rem", textAlign: "center" }}>
-          <p style={{ margin: 0 }}>© Todos los derechos reservados.</p>
-          <p style={{ margin: 0 }}>Desarrollado por Kevin Almengor</p>
+        <div
+          style={{
+            background: "#f2f2f2",
+            padding: "1.8rem 1rem",
+            textAlign: "center",
+          }}
+        >
+          <p style={{ margin: 0, fontSize: "0.8rem", color: "#000000ff" }}>
+            © Todos los derechos reservados.
+          </p>
+          <p style={{ margin: 0, fontSize: "0.8rem", color: "#000000ff" }}>
+            Desarrollado por Kevin Almengor
+          </p>
         </div>
       </footer>
     </>

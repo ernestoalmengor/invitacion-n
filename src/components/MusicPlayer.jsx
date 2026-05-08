@@ -19,7 +19,7 @@ const MusicPlayer = () => {
 
   return (
     <div
-      style={{ position: "fixed", bottom: "30px", right: "30px", zIndex: 1000 }}
+      style={{ position: "fixed", bottom: "12px", right: "12px", zIndex: 1000 }}
     >
       <audio ref={audioRef} loop>
         <source src="/music/fondo.mp3" type="audio/mpeg" />
@@ -29,13 +29,15 @@ const MusicPlayer = () => {
         style={{
           width: "55px",
           height: "55px",
-          background: "var(--primary)",
+          background: "rgba(176, 136, 82, 0.78)",
+          backdropFilter: "blur(2px)",
           borderRadius: "50%",
           display: "flex",
           alignItems: "center",
           justifyContent: "center",
           cursor: "pointer",
-          transition: "transform 0.3s",
+          boxShadow: "0 4px 16px rgba(0, 0, 0, 0.16)",
+          transition: "transform 0.3s, background 0.3s",
         }}
       >
         <i

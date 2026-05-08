@@ -12,7 +12,15 @@ const Countdown = ({ targetDate }) => {
     const timer = setInterval(() => {
       const now = Date.now();
       const distance = targetDate - now;
-      if (distance < 0) return;
+      if (distance <= 0) {
+        setTimeLeft({
+          days: 0,
+          hours: 0,
+          minutes: 0,
+          seconds: 0,
+        });
+        return;
+      }
 
       setTimeLeft({
         days: Math.floor(distance / (1000 * 60 * 60 * 24)),
@@ -26,14 +34,21 @@ const Countdown = ({ targetDate }) => {
   }, [targetDate]);
 
   const createCalendarFile = () => {
-    const start = new Date("2026-05-16T10:30:00");
-    const end = new Date("2026-05-16T23:30:00");
+    const start = new Date("2026-06-20T16:00:00");
+    const end = new Date("2026-06-20T23:30:00");
     const fmt = (d) => d.toISOString().replace(/[-:]/g, "").split(".")[0] + "Z";
+    const uid = `boda-20260620-160000@invitacion-n`;
+    const dtStamp = fmt(new Date());
 
     const content = `BEGIN:VCALENDAR
 VERSION:2.0
+PRODID:-//Invitacion Boda//ES
+CALSCALE:GREGORIAN
+METHOD:PUBLISH
 BEGIN:VEVENT
 SUMMARY:Boda Belen y Ricardo
+UID:${uid}
+DTSTAMP:${dtStamp}
 DTSTART:${fmt(start)}
 DTEND:${fmt(end)}
 LOCATION:Ciudad Vieja Sac, zona 4
@@ -50,17 +65,31 @@ END:VCALENDAR`;
     URL.revokeObjectURL(url);
   };
 
+  const addToCalendar = () => {
+    const startUtc = "20260620T220000Z";
+    const endUtc = "20260621T053000Z";
+    const googleUrl = `https://calendar.google.com/calendar/render?action=TEMPLATE&text=${encodeURIComponent("Boda Belen y Ricardo")}&dates=${startUtc}/${endUtc}&details=${encodeURIComponent("Te esperamos en nuestra boda.")}&location=${encodeURIComponent("Ciudad Vieja Sac, zona 4")}`;
+
+    window.open(googleUrl, "_blank", "noopener,noreferrer");
+    // Respaldo universal para Apple/Outlook/calendarios locales.
+    createCalendarFile();
+  };
+
+  const twoDigits = (value) => String(value).padStart(2, "0");
+
   const cardStyle = (gold) => ({
     border: `2px solid ${gold ? "var(--primary)" : "var(--dark)"}`,
     borderRadius: "16px",
-    width: "72px",
-    height: "88px",
+    width: "100%",
+    minHeight: "82px",
     display: "flex",
     flexDirection: "column",
     justifyContent: "center",
     alignItems: "center",
     background: "white",
     color: "var(--dark)",
+    boxShadow: "0 8px 18px rgba(0,0,0,0.08)",
+    padding: "0.5rem 0.35rem",
   });
 
   return (
@@ -137,33 +166,43 @@ END:VCALENDAR`;
 
         <div
           style={{
-            display: "flex",
-            justifyContent: "center",
-            flexWrap: "wrap",
-            gap: "0.8rem",
+            display: "grid",
+            gridTemplateColumns: "repeat(4, minmax(0, 1fr))",
+            gap: "0.45rem",
             marginBottom: "1.6rem",
+            width: "min(100%, 420px)",
+            marginLeft: "auto",
+            marginRight: "auto",
           }}
         >
           <div style={cardStyle(true)}>
-            <b>{timeLeft.days}</b>
-            <span>Dias</span>
+            <b style={{ fontSize: "clamp(1.25rem, 4.8vw, 1.7rem)", lineHeight: 1 }}>
+              {twoDigits(timeLeft.days)}
+            </b>
+            <span style={{ fontSize: "clamp(0.7rem, 2.7vw, 0.86rem)" }}>Dias</span>
           </div>
           <div style={cardStyle(false)}>
-            <b>{timeLeft.hours}</b>
-            <span>Horas</span>
+            <b style={{ fontSize: "clamp(1.25rem, 4.8vw, 1.7rem)", lineHeight: 1 }}>
+              {twoDigits(timeLeft.hours)}
+            </b>
+            <span style={{ fontSize: "clamp(0.7rem, 2.7vw, 0.86rem)" }}>Horas</span>
           </div>
           <div style={cardStyle(true)}>
-            <b>{timeLeft.minutes}</b>
-            <span>Minutos</span>
+            <b style={{ fontSize: "clamp(1.25rem, 4.8vw, 1.7rem)", lineHeight: 1 }}>
+              {twoDigits(timeLeft.minutes)}
+            </b>
+            <span style={{ fontSize: "clamp(0.7rem, 2.7vw, 0.86rem)" }}>Minutos</span>
           </div>
           <div style={cardStyle(false)}>
-            <b>{timeLeft.seconds}</b>
-            <span>Segundos</span>
+            <b style={{ fontSize: "clamp(1.25rem, 4.8vw, 1.7rem)", lineHeight: 1 }}>
+              {twoDigits(timeLeft.seconds)}
+            </b>
+            <span style={{ fontSize: "clamp(0.7rem, 2.7vw, 0.86rem)" }}>Segundos</span>
           </div>
         </div>
 
         <button
-          onClick={createCalendarFile}
+          onClick={addToCalendar}
           style={{
             background: "var(--primary)",
             color: "white",

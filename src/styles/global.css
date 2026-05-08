@@ -60,3 +60,8 @@
   color: var(--primary) !important;
   font-weight: 400;
 }
+.gold-nav {
+  font-family: "Source Serif 4", serif;
+  color: var(--primary) !important;
+  font-weight: 400;
+}
