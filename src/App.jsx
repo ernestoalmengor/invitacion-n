@@ -8,11 +8,19 @@ import Gallery from "./components/Gallery";
 import MusicPlayer from "./components/MusicPlayer";
 import ScrollToTop from "./components/ScrollToTop";
 
+import AOS from "aos";
+import "aos/dist/aos.css";
+
 function App() {
   const [loading, setLoading] = useState(true);
   const weddingDate = new Date("2026-06-20T16:00:00");
 
   useEffect(() => {
+    AOS.init({
+      duration: 1200,
+      once: true,
+      easing: "ease-in-out",
+    });
     setTimeout(() => setLoading(false), 2000);
   }, []);
 

@@ -72,6 +72,7 @@ const Itinerary = () => {
       <div style={{ maxWidth: "760px", margin: "0 auto", padding: "0 0 0.4rem" }}>
         <h2
           className="gold-script"
+          data-aos="fade-down"
           style={{
             fontSize: "clamp(3rem, 8vw, 4.4rem)",
             textAlign: "center",
@@ -106,6 +107,8 @@ const Itinerary = () => {
           {events.map((event, idx) => (
             <div
               key={idx}
+              data-aos="fade-left"
+              data-aos-delay={idx * 100}
               style={{
                 position: "relative",
                 marginBottom: idx === events.length - 1 ? 0 : "1rem",
