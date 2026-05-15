@@ -1,23 +1,73 @@
-import React from "react";
+import React, { useState, useEffect } from "react";
 
-const EventDetails = () => {
-  const [showModal, setShowModal] = React.useState(false);
-  const [guestCount, setGuestCount] = React.useState(1);
-  const totalPasses = 5;
+const EventDetails = ({ guestData }) => {
+  const [showModal, setShowModal] = useState(false);
+  const [guestCount, setGuestCount] = useState(5);
+  const [isConfirmed, setIsConfirmed] = useState(false);
+  const [isSubmitting, setIsSubmitting] = useState(false);
+
+  useEffect(() => {
+    if (guestData && guestData.pases) {
+      setGuestCount(Number(guestData.pases) || 1);
+    }
+  }, [guestData]);
+
+  // Use dynamic data or fallback to generic
+  const isGeneric = !guestData || !guestData.no;
+  const displayName = isGeneric ? '"Aca se coloca el nombre del invitado"' : guestData.invitado;
+  const totalPasses = isGeneric ? 5 : Number(guestData.pases) || 1;
 
   const handleIncrement = () => {
-    if (guestCount < totalPasses) setGuestCount(prev => prev + 1);
+    if (guestCount < totalPasses) setGuestCount((prev) => prev + 1);
   };
 
   const handleDecrement = () => {
-    if (guestCount > 1) setGuestCount(prev => prev - 1);
+    if (guestCount > 1) setGuestCount((prev) => prev - 1);
   };
 
   const handleConfirm = () => {
-    const message = `Hola! Confirmo mi asistencia para ${guestCount} personas de la Familia Lopez Hernandez.`;
-    const whatsappUrl = `https://wa.me/50255555555?text=${encodeURIComponent(message)}`;
-    window.open(whatsappUrl, "_blank");
-    setShowModal(false);
+    setIsSubmitting(true);
+
+    const scriptUrl = import.meta.env.VITE_GOOGLE_SCRIPT_URL;
+    
+    if (!isGeneric && scriptUrl) {
+      fetch(scriptUrl, {
+        method: "POST",
+        headers: {
+          "Content-Type": "text/plain;charset=utf-8",
+        },
+        body: JSON.stringify({
+          action: "update_rsvp",
+          id: guestData.no,
+          confirmados: guestCount,
+          estado: "Confirmado"
+        }),
+      })
+      .then(() => {
+        setIsSubmitting(false);
+        setIsConfirmed(true);
+        setTimeout(() => {
+          setShowModal(false);
+          setIsConfirmed(false);
+        }, 3000);
+      })
+      .catch((err) => {
+        console.error(err);
+        setIsSubmitting(false);
+        setIsConfirmed(true);
+        setTimeout(() => { setShowModal(false); setIsConfirmed(false); }, 3000);
+      });
+    } else {
+      // Simulate save for generic view or missing URL
+      setTimeout(() => {
+        setIsSubmitting(false);
+        setIsConfirmed(true);
+        setTimeout(() => {
+          setShowModal(false);
+          setIsConfirmed(false);
+        }, 3000);
+      }, 1000);
+    }
   };
 
   return (
@@ -161,7 +211,7 @@ const EventDetails = () => {
                 fontWeight: "normal",
               }}
             >
-              Familia Lopez Hernandez
+              {displayName}
             </h3>
             <p
               style={{
@@ -179,34 +229,36 @@ const EventDetails = () => {
               <br />
               Por favor, confirma tu asistencia.
             </p>
-            <button
-              onClick={() => setShowModal(true)}
-              style={{
-                background: "var(--primary)",
-                color: "white",
-                border: "none",
-                borderRadius: "999px",
-                padding:
-                  "clamp(0.6rem, 2vw, 0.9rem) clamp(1.2rem, 3vw, 1.8rem)",
-                fontWeight: 600,
-                cursor: "pointer",
-                fontSize: "clamp(0.85rem, 3vw, 1rem)",
-              }}
-            >
-              Confirmar asistencia
-            </button>
-          </div>
-          <div style={{ flexShrink: 0 }}>
-            <img
-              src="https://api.qrserver.com/v1/create-qr-code/?size=160x160&data=BodaBelenRicardo"
-              alt="QR de confirmacion"
-              style={{
-                width: "clamp(90px, 25vw, 160px)",
-                height: "clamp(90px, 25vw, 160px)",
-                display: "block",
-              }}
-              loading="lazy"
-            />
+            {!isGeneric && guestData?.estado?.toLowerCase() === 'confirmado' ? (
+              <div style={{
+                background: '#e8f5e9',
+                color: '#2e7d32',
+                padding: '0.8rem',
+                borderRadius: '8px',
+                fontWeight: 'bold',
+                textAlign: 'center'
+              }}>
+                <i className="fas fa-check-circle" style={{ marginRight: '8px' }}></i>
+                Asistencia ya confirmada ({guestData.confirmados || guestCount} pases)
+              </div>
+            ) : (
+              <button
+                onClick={() => setShowModal(true)}
+                style={{
+                  background: "var(--primary)",
+                  color: "white",
+                  border: "none",
+                  borderRadius: "999px",
+                  padding:
+                    "clamp(0.6rem, 2vw, 0.9rem) clamp(1.2rem, 3vw, 1.8rem)",
+                  fontWeight: 600,
+                  cursor: "pointer",
+                  fontSize: "clamp(0.85rem, 3vw, 1rem)",
+                }}
+              >
+                Confirmar asistencia
+              </button>
+            )}
           </div>
         </div>
       </div>
@@ -225,7 +277,7 @@ const EventDetails = () => {
             justifyContent: "center",
             alignItems: "center",
             zIndex: 10000,
-            padding: "20px"
+            padding: "20px",
           }}
         >
           <div
@@ -240,85 +292,156 @@ const EventDetails = () => {
               boxShadow: "0 20px 40px rgba(0,0,0,0.2)",
             }}
           >
-            <h2 className="gold-script" style={{ fontSize: "2.5rem", marginBottom: "0.5rem" }}>¿Cuántos Asistirán?</h2>
-            <p style={{ fontFamily: 'Montserrat, sans-serif', color: '#707070', marginBottom: "1.5rem" }}>
-              Asignados: <span style={{ fontWeight: 700, color: 'var(--primary)' }}>{totalPasses} pases</span>
-            </p>
+            {!isConfirmed ? (
+              <>
+                <h2
+                  className="gold-script"
+                  style={{ fontSize: "2.5rem", marginBottom: "0.5rem" }}
+                >
+                  Confirmar Asistencia
+                </h2>
+                <p
+                  style={{
+                    fontFamily: "Montserrat, sans-serif",
+                    color: "#707070",
+                    marginBottom: "1.5rem",
+                  }}
+                >
+                  Asignados:{" "}
+                  <span style={{ fontWeight: 700, color: "var(--primary)" }}>
+                    {totalPasses} pases
+                  </span>
+                </p>
 
-            <div style={{ display: 'flex', justifyContent: 'center', alignItems: 'center', gap: '1.5rem', marginBottom: '2rem' }}>
-              <button
-                onClick={handleDecrement}
-                style={{
-                  width: "45px",
-                  height: "45px",
-                  borderRadius: "50%",
-                  border: "1px solid #ddd",
-                  background: "white",
-                  fontSize: "1.5rem",
-                  cursor: "pointer",
-                  display: 'flex',
-                  alignItems: 'center',
-                  justifyContent: 'center',
-                  transition: 'all 0.2s'
-                }}
-              >
-                <i className="fas fa-minus" style={{ fontSize: '0.9rem' }}></i>
-              </button>
-              <span style={{ fontSize: "2rem", fontWeight: 600, width: "40px", fontFamily: 'Montserrat, sans-serif' }}>{guestCount}</span>
-              <button
-                onClick={handleIncrement}
-                style={{
-                  width: "45px",
-                  height: "45px",
-                  borderRadius: "50%",
-                  border: "1px solid #ddd",
-                  background: "white",
-                  fontSize: "1.5rem",
-                  cursor: "pointer",
-                  display: 'flex',
-                  alignItems: 'center',
-                  justifyContent: 'center',
-                  transition: 'all 0.2s'
-                }}
-              >
-                <i className="fas fa-plus" style={{ fontSize: '0.9rem' }}></i>
-              </button>
-            </div>
+                <p style={{ fontFamily: "Montserrat, sans-serif", color: "#4a3535", fontSize: "0.9rem", marginBottom: "0.5rem", textAlign: "left" }}>¿Cuántos asistirán?</p>
+                <div
+                  style={{
+                    display: "flex",
+                    justifyContent: "center",
+                    alignItems: "center",
+                    gap: "1.5rem",
+                    marginBottom: "1.5rem",
+                  }}
+                >
+                  <button
+                    onClick={handleDecrement}
+                    style={{
+                      width: "45px",
+                      height: "45px",
+                      borderRadius: "50%",
+                      border: "1px solid #ddd",
+                      background: "white",
+                      fontSize: "1.5rem",
+                      cursor: "pointer",
+                      display: "flex",
+                      alignItems: "center",
+                      justifyContent: "center",
+                      transition: "all 0.2s",
+                    }}
+                  >
+                    <i
+                      className="fas fa-minus"
+                      style={{ fontSize: "0.9rem" }}
+                    ></i>
+                  </button>
+                  <span
+                    style={{
+                      fontSize: "2rem",
+                      fontWeight: 600,
+                      width: "40px",
+                      fontFamily: "Montserrat, sans-serif",
+                    }}
+                  >
+                    {guestCount}
+                  </span>
+                  <button
+                    onClick={handleIncrement}
+                    style={{
+                      width: "45px",
+                      height: "45px",
+                      borderRadius: "50%",
+                      border: "1px solid #ddd",
+                      background: "white",
+                      fontSize: "1.5rem",
+                      cursor: "pointer",
+                      display: "flex",
+                      alignItems: "center",
+                      justifyContent: "center",
+                      transition: "all 0.2s",
+                    }}
+                  >
+                    <i
+                      className="fas fa-plus"
+                      style={{ fontSize: "0.9rem" }}
+                    ></i>
+                  </button>
+                </div>
 
-            <div style={{ display: 'flex', gap: '1rem', marginTop: '1rem' }}>
-              <button
-                onClick={() => setShowModal(false)}
-                style={{
-                  flex: 1,
-                  background: "transparent",
-                  color: "#707070",
-                  border: "1px solid #ddd",
-                  borderRadius: "999px",
-                  padding: "0.8rem",
-                  cursor: "pointer",
-                  fontSize: "0.95rem",
-                  fontWeight: 500
-                }}
-              >
-                Cancelar
-              </button>
-              <button
-                onClick={handleConfirm}
-                style={{
-                  flex: 2,
-                  background: "var(--primary)",
-                  color: "white",
-                  border: "none",
-                  borderRadius: "999px",
-                  padding: "0.8rem",
-                  fontWeight: 600,
-                  cursor: "pointer",
-                  fontSize: "0.95rem"
-                }}
-              >
-                Confirmar
-              </button>
-            </div>
+                <div
+                  style={{ display: "flex", gap: "1rem", marginTop: "1rem" }}
+                >
+                  <button
+                    onClick={() => setShowModal(false)}
+                    style={{
+                      flex: 1,
+                      background: "transparent",
+                      color: "#707070",
+                      border: "1px solid #ddd",
+                      borderRadius: "999px",
+                      padding: "0.8rem",
+                      cursor: "pointer",
+                      fontSize: "0.95rem",
+                      fontWeight: 500,
+                    }}
+                  >
+                    Cancelar
+                  </button>
+                  <button
+                    onClick={handleConfirm}
+                    disabled={isSubmitting}
+                    style={{
+                      flex: 2,
+                      background: isSubmitting ? "#a8a8a8" : "var(--primary)",
+                      color: "white",
+                      border: "none",
+                      borderRadius: "999px",
+                      padding: "0.8rem",
+                      fontWeight: 600,
+                      cursor: isSubmitting ? "not-allowed" : "pointer",
+                      fontSize: "0.95rem",
+                    }}
+                  >
+                    {isSubmitting ? "Enviando..." : "Confirmar"}
+                  </button>
+                </div>
+              </>
+            ) : (
+              <div style={{ padding: "1rem 0" }}>
+                <i
+                  className="fas fa-check-circle"
+                  style={{
+                    fontSize: "4rem",
+                    color: "var(--primary)",
+                    marginBottom: "1rem",
+                  }}
+                ></i>
+                <h2
+                  className="gold-script"
+                  style={{ fontSize: "2.5rem", marginBottom: "0.5rem" }}
+                >
+                  ¡Gracias!
+                </h2>
+                <p
+                  style={{
+                    fontFamily: "Montserrat, sans-serif",
+                    color: "#4a3535",
+                    fontSize: "1.1rem",
+                  }}
+                >
+                  Gracias por confirmar tu asistencia.
+                </p>
+              </div>
+            )}
           </div>
         </div>
       )}

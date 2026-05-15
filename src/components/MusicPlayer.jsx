@@ -1,12 +1,20 @@
 import React, { useRef, useState, useEffect } from "react";
 
-const MusicPlayer = () => {
+const MusicPlayer = ({ autoPlayTrigger }) => {
   const audioRef = useRef(null);
   const [isPlaying, setIsPlaying] = useState(false);
 
   useEffect(() => {
     audioRef.current.volume = 0.5;
   }, []);
+
+  useEffect(() => {
+    if (autoPlayTrigger && !isPlaying) {
+      audioRef.current.play()
+        .then(() => setIsPlaying(true))
+        .catch((e) => console.log("Auto-play prevented", e));
+    }
+  }, [autoPlayTrigger]);
 
   const togglePlay = () => {
     if (isPlaying) {

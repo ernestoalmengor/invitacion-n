@@ -100,7 +100,7 @@ const Itinerary = () => {
               width: "2px",
               background:
                 "linear-gradient(to bottom, rgba(176,136,82,0.25), rgba(176,136,82,0.85), rgba(176,136,82,0.25))",
-              zIndex: 1,
+              zIndex: 0,
             }}
           />
 
@@ -114,6 +114,7 @@ const Itinerary = () => {
                 marginBottom: idx === events.length - 1 ? 0 : "1rem",
                 display: "flex",
                 alignItems: "center",
+                zIndex: 2,
               }}
             >
               <div
@@ -134,8 +135,7 @@ const Itinerary = () => {
                     height: "46px",
                     borderRadius: "50%",
                     border: "1px solid rgba(176, 136, 82, 0.35)",
-                    background:
-                      "linear-gradient(145deg, rgba(255,255,255,0.95), rgba(245,239,229,0.95))",
+                    background: "#ffffff",
                     boxShadow: "0 6px 14px rgba(0,0,0,0.08)",
                     display: "flex",
                     alignItems: "center",
